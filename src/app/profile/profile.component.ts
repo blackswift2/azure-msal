@@ -3,7 +3,8 @@ import { MsalService } from "@azure/msal-angular";
 import { HttpClient } from "@angular/common/http";
 import { InteractionRequiredAuthError, AuthError } from "msal";
 
-const GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0/me";
+const GRAPH_ENDPOINT =
+  "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,jobTitle,userPrincipalName,mail,businessPhones,officeLocation,employeeId,department,companyName,streetAddress,city,state,postalCode,country";
 
 @Component({
   selector: "app-profile",
@@ -28,22 +29,13 @@ export class ProfileComponent implements OnInit {
         console.log("Errrrorrr", err);
         // If there is an interaction required error,
         // call one of the interactive methods and then make the request again.
-        // if (
-        //   InteractionRequiredAuthError.isInteractionRequiredError(err.errorCode)
-        // ) {
-        //   this.authService
-        //     .acquireTokenPopup({
-        //       scopes: this.authService.getScopesForEndpoint(GRAPH_ENDPOINT),
-        //     })
-        //     .then(() => {
-        //       this.http
-        //         .get(GRAPH_ENDPOINT)
-        //         .toPromise()
-        //         .then((profile) => {
-        //           this.profile = profile;
-        //         });
-        //     });
-        // }
+        if (
+          InteractionRequiredAuthError.isInteractionRequiredError(err.errorCode)
+        ) {
+          this.authService.acquireTokenRedirect({
+            scopes: ["user.read", "openid", "profile"],
+          });
+        }
       },
     });
   }

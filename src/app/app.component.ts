@@ -1,43 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-import { BroadcastService, MsalService } from '@azure/msal-angular';
-import { Logger, CryptoUtils } from 'msal';
+import { Component, OnInit } from "@angular/core";
+import { BroadcastService, MsalService } from "@azure/msal-angular";
+import { Logger, CryptoUtils } from "msal";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-  title = 'MSAL - Angular 9 Sample App';
+  title = "MSAL - Angular 9 Sample App";
   isIframe = false;
   loggedIn = false;
 
-  constructor(private broadcastService: BroadcastService, private authService: MsalService) { }
+  constructor(
+    private broadcastService: BroadcastService,
+    private authService: MsalService
+  ) {}
 
   ngOnInit() {
     this.isIframe = window !== window.parent && !window.opener;
 
     this.checkoutAccount();
 
-    this.broadcastService.subscribe('msal:loginSuccess', () => {
+    this.broadcastService.subscribe("msal:loginSuccess", () => {
       this.checkoutAccount();
     });
 
     this.authService.handleRedirectCallback((authError, response) => {
       if (authError) {
-        console.error('Redirect Error: ', authError.errorMessage);
+        console.error("Redirect Error: ", authError.errorMessage);
         return;
       }
 
-      console.log('Redirect Success: ', response);
+      console.log("Redirect Success: ", response);
     });
 
-    this.authService.setLogger(new Logger((logLevel, message, piiEnabled) => {
-      console.log('MSAL Logging: ', message);
-    }, {
-      correlationId: CryptoUtils.createNewGuid(),
-      piiLoggingEnabled: false
-    }));
+    this.authService.setLogger(
+      new Logger(
+        (logLevel, message, piiEnabled) => {
+          console.log("MSAL Logging: ", message);
+        },
+        {
+          correlationId: CryptoUtils.createNewGuid(),
+          piiLoggingEnabled: false,
+        }
+      )
+    );
   }
 
   checkoutAccount() {
@@ -45,12 +53,17 @@ export class AppComponent implements OnInit {
   }
 
   login() {
-    const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
-
+    const isIE =
+      window.navigator.userAgent.indexOf("MSIE ") > -1 ||
+      window.navigator.userAgent.indexOf("Trident/") > -1;
+    const loginRequest = {
+      scopes: ["user.read", "openid", "profile"],
+      prompt: "login",
+    };
     if (isIE) {
-      this.authService.loginRedirect();
+      this.authService.loginRedirect(loginRequest);
     } else {
-      this.authService.loginPopup();
+      this.authService.loginRedirect(loginRequest);
     }
   }
 

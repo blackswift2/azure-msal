@@ -39,21 +39,16 @@ function MSALConfigFactory(): Configuration {
       redirectUri: "http://localhost:4203/",
     },
     cache: {
-      cacheLocation: "sessionStorage",
-      storeAuthStateInCookie: isIE, // set to true for IE 11
+      cacheLocation: "localStorage",
+      storeAuthStateInCookie: true, // set to true for IE 11
     },
   };
 }
 
 function MSALAngularConfigFactory(): MsalAngularConfiguration {
   return {
-    popUp: !isIE,
-    consentScopes: [
-      "user.read",
-      "openid",
-      "profile",
-      "api://e2412aed-294e-4a00-a767-238b0f7a647c/access_as_user",
-    ],
+    popUp: false,
+    consentScopes: ["user.read", "openid", "profile"],
     unprotectedResources: ["https://www.microsoft.com/en-us/"],
     protectedResourceMap: [
       ["https://graph.microsoft.com/v1.0/me", ["user.read"]],
