@@ -36,7 +36,7 @@ function MSALConfigFactory(): Configuration {
       clientId: "e2412aed-294e-4a00-a767-238b0f7a647c",
       authority:
         "https://login.microsoftonline.com/9107b728-2166-4e5d-8d13-d1ffdf0351ef",
-      redirectUri: "http://localhost:4203/",
+      redirectUri: "https://azure-msal.herokuapp.com/",
     },
     cache: {
       cacheLocation: "localStorage",
